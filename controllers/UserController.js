@@ -64,6 +64,11 @@ class UserController {
     let user = {};
 
     [...this.formEl.elements].forEach((field, index) => {
+      if (["name", "email", "password"].indexOf(field.name) > -1 && !field.value) {
+        field.parentElement.classList.add("has-error");
+        return false;
+      }
+
       if (field.name === "gender") {
         if (field.checked) {
           user[field.name] = field.value;
@@ -99,7 +104,7 @@ class UserController {
                     <td>${dataUser.name}</td>
                     <td>${dataUser.email}</td>
                     <td>${dataUser.admin ? "Sim" : "Não"}</td>
-                    <td>${dataUser.register}</td>
+                    <td>${Utils.dateFormat(dataUser.register)}</td>
                 <td>
             <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
             <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
