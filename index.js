@@ -35,6 +35,7 @@ document.getElementById("form-user-create").addEventListener("submit", (e) => {
       }
     } else {
       user[field.name] = field.value;
+      console.log("ascascas");
     }
   });
   addLine(user);
