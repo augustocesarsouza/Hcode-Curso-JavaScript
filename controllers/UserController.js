@@ -17,10 +17,7 @@ class UserController {
   getValues() {
     let user = {};
 
-    const elementsSpred = [...this.formEl.elements];
-    console.log(elementsSpred);
-
-    elementsSpred.forEach((field, index) => {
+    [...this.formEl.elements].forEach((field, index) => {
       if (field.name === "gender") {
         if (field.checked) {
           user[field.name] = field.value;
