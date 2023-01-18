@@ -39,23 +39,13 @@ class UserController {
             result._photo = content;
           }
 
-          tr.dataset.user = JSON.stringify(result);
+          let user = new User();
 
-          tr.innerHTML = `
-          <td>
-              <img src="${result._photo}" alt="User Image" class="img-circle img-sm" />
-                  </td>
-                      <td>${result._name}</td>
-                      <td>${result._email}</td>
-                      <td>${result._admin ? "Sim" : "Não"}</td>
-                      <td>${Utils.dateFormat(result._register)}</td>
-                  <td>
-              <button type="button" class="btn btn-primary btn-edit btn-flat">Editar</button>
-              <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-          </td>     
-        `;
+          user.loadFromJSON(result);
 
-          this.addEventsTr(tr);
+          user.save();
+
+          this.getTr(user, tr);
 
           this.updateCount();
 
@@ -89,7 +79,7 @@ class UserController {
         .then((content) => {
           values.photo = content;
 
-          this.insert(values);
+          values.save();
 
           this.addLine(values);
 
@@ -174,8 +164,8 @@ class UserController {
   getUsersStorage() {
     let users = [];
 
-    if (sessionStorage.getItem("users")) {
-      users = JSON.parse(sessionStorage.getItem("users"));
+    if (localStorage.getItem("users")) {
+      users = JSON.parse(localStorage.getItem("users"));
     }
 
     return users;
@@ -193,16 +183,16 @@ class UserController {
     });
   }
 
-  insert(data) {
-    let users = this.getUsersStorage();
+  addLine(dataUser) {
+    let tr = this.getTr(dataUser);
 
-    users.push(data);
+    this.tableEl.appendChild(tr);
 
-    sessionStorage.setItem("users", JSON.stringify(users));
+    this.updateCount();
   }
 
-  addLine(dataUser) {
-    const tr = document.createElement("tr");
+  getTr(dataUser, tr = null) {
+    if (tr === null) tr = document.createElement("tr");
 
     tr.dataset.user = JSON.stringify(dataUser);
 
@@ -222,9 +212,7 @@ class UserController {
 
     this.addEventsTr(tr);
 
-    this.tableEl.appendChild(tr);
-
-    this.updateCount();
+    return tr;
   }
 
   addEventsTr(tr) {
