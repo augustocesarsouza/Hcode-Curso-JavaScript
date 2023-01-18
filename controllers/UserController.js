@@ -6,6 +6,7 @@ class UserController {
 
     this.onSubmit();
     this.onEdit();
+    this.selectAll();
   }
 
   onEdit() {
@@ -88,6 +89,8 @@ class UserController {
         .then((content) => {
           values.photo = content;
 
+          this.insert(values);
+
           this.addLine(values);
 
           this.formEl.reset();
@@ -168,6 +171,36 @@ class UserController {
     return objectUser;
   }
 
+  getUsersStorage() {
+    let users = [];
+
+    if (sessionStorage.getItem("users")) {
+      users = JSON.parse(sessionStorage.getItem("users"));
+    }
+
+    return users;
+  }
+
+  selectAll() {
+    let users = this.getUsersStorage();
+
+    users.forEach((dataUser) => {
+      let user = new User();
+
+      user.loadFromJSON(dataUser);
+
+      this.addLine(user);
+    });
+  }
+
+  insert(data) {
+    let users = this.getUsersStorage();
+
+    users.push(data);
+
+    sessionStorage.setItem("users", JSON.stringify(users));
+  }
+
   addLine(dataUser) {
     const tr = document.createElement("tr");
 
@@ -183,7 +216,7 @@ class UserController {
                     <td>${Utils.dateFormat(dataUser.register)}</td>
                 <td>
             <button type="button" class="btn btn-primary btn-edit btn-flat">Editar</button>
-            <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+            <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
         </td>     
     `;
 
@@ -195,6 +228,14 @@ class UserController {
   }
 
   addEventsTr(tr) {
+    tr.querySelector(".btn-delete").addEventListener("click", (e) => {
+      if (confirm("Deseja realmente excluir?")) {
+        tr.remove();
+
+        this.updateCount();
+      }
+    });
+
     tr.querySelector(".btn-edit").addEventListener("click", (e) => {
       let json = JSON.parse(tr.dataset.user);
 
