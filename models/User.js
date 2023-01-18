@@ -82,21 +82,24 @@ class User {
   }
 
   getNewID() {
-    if (!window.id) window.id = 0; // se não existir id ele cria simples window global
+    let usersID = parseInt(localStorage.getItem("userID"));
 
-    id++;
+    if (!usersID > 0) usersID = 0; // se não existir id ele cria simples window global
 
-    return id;
+    usersID++;
+
+    localStorage.setItem("userID", usersID);
+
+    return usersID;
   }
 
   save() {
     let users = User.getUsersStorage();
-    console.log(users);
 
     if (this.id > 0) {
       users.map((u) => {
-        if (u._id === this.id) {
-          u = this;
+        if (u._id == this.id) {
+          Object.assign(u, this);
         }
 
         return u;
@@ -105,6 +108,18 @@ class User {
       this._id = this.getNewID();
       users.push(this);
     }
+
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+
+  remove() {
+    let users = User.getUsersStorage();
+
+    users.forEach((userData, index) => {
+      if (this._id == userData._id) {
+        users.splice(index, 1);
+      }
+    });
 
     localStorage.setItem("users", JSON.stringify(users));
   }
